@@ -4,7 +4,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/models/state_model.dart';
 import 'package:get/get.dart';
@@ -36,10 +38,11 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
   Timer? _updateTimer;
 
   double get em => 14.0;
+
   double? get height => bind.isIncomingOnly() ? null : em * 3;
 
   void onUsePublicServerGuide() {
-    const url = "https://rustdesk.com/pricing.html";
+    const url = "https://BaradaranAssistant.com/pricing.html";
     canLaunchUrlString(url).then((can) {
       if (can) {
         launchUrlString(url);
@@ -108,32 +111,40 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
         );
 
     basicWidget() => Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: 8,
-              width: 8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: _svcStopped.value ||
-                        stateGlobal.svcStatus.value == SvcStatus.connecting
-                    ? kColorWarn
-                    : (stateGlobal.svcStatus.value == SvcStatus.ready
-                        ? Color.fromARGB(255, 50, 190, 166)
-                        : Color.fromARGB(255, 224, 79, 95)),
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Flexible(
+          child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 8,
+                    width: 8,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: _svcStopped.value ||
+                              stateGlobal.svcStatus.value == SvcStatus.connecting
+                          ? kColorWarn
+                          : (stateGlobal.svcStatus.value == SvcStatus.ready
+                              ? Color.fromARGB(255, 50, 190, 166)
+                              : Color.fromARGB(255, 224, 79, 95)),
+                    ),
+                  ).marginSymmetric(horizontal: em),
+                  Container(
+                    width: isIncomingOnly ? 226 : null,
+                    child: _buildConnStatusMsg(),
+                  ),
+                  // stop
+                  if (!isIncomingOnly) startServiceWidget(),
+                  // ready && public
+                  // No need to show the guide if is custom client.
+                  if (!isIncomingOnly) setupServerWidget(),
+                ],
               ),
-            ).marginSymmetric(horizontal: em),
-            Container(
-              width: isIncomingOnly ? 226 : null,
-              child: _buildConnStatusMsg(),
-            ),
-            // stop
-            if (!isIncomingOnly) startServiceWidget(),
-            // ready && public
-            // No need to show the guide if is custom client.
-            if (!isIncomingOnly) setupServerWidget(),
-          ],
-        );
+        ),
+        Text('Baradaran Assistant Powered By RustDesk  ',  style: Theme.of(context).textTheme.bodySmall,),
+      ],
+    );
 
     return Container(
       height: height,
@@ -280,8 +291,36 @@ class _ConnectionPageState extends State<ConnectionPage>
             child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(child: _buildRemoteIDTextField(context)),
+                Row(
+                  children: [
+                    Button(onTap: ()async{
+                      await setServerConfig(
+                      null,
+                      null,
+                      ServerConfig(
+                          idServer: 'assistant.baradaransoft.com',
+                          relayServer: '',
+                          apiServer: '',
+                          key:'fhw23+g6FOHEFnDTwJouRxfMlgZCfVhY6Ng9e0xgGpk='));
+
+                    }, text: "سرور 1"),
+                    SizedBox(width: 20),
+                    Button(onTap: ()async{
+                      await setServerConfig(
+                      null,
+                     null,
+                      ServerConfig(
+                          idServer: '',
+                          relayServer: '',
+                          apiServer: '',
+                          key:''));
+
+                    }, text: "سرور Rust-Desk"),
+                  ],
+                ).marginOnly(right: 22)
               ],
             ).marginOnly(top: 22),
             SizedBox(height: 12),

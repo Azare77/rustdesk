@@ -1,6 +1,6 @@
 {
-    "name": "rustdesk",
-    "short_name": "rustdesk",
+    "name": "BaradaranAssistant",
+    "short_name": "BaradaranAssistant",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
